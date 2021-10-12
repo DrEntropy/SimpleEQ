@@ -76,8 +76,10 @@ public:
     
 private:
     
-    void  updateParameters(float sampleRate);
+    void  updateFilters(float sampleRate);
     void  updatePeakFilter(const ChainSettings& cs,float sampleRate);
+    void  updateHighCutFilters(const ChainSettings& cs,float sampleRate);
+    void  updateLowCutFilters(const ChainSettings& cs,float sampleRate);
     
     using Filter = juce::dsp::IIR::Filter<float>;
     using CutFilter = juce::dsp::ProcessorChain<Filter,Filter,Filter,Filter>;
