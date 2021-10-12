@@ -30,6 +30,7 @@ struct ChainSettings
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState&  );
 
+
 class SimpleEQAudioProcessor  : public juce::AudioProcessor
 {
 public:
@@ -74,6 +75,10 @@ public:
     juce::AudioProcessorValueTreeState apvts {*this, nullptr,"Parameters", createParameterLayout()};
     
 private:
+    
+    void  updateParameters(float sampleRate);
+    void  updatePeakFilter(const ChainSettings& cs,float sampleRate);
+    
     using Filter = juce::dsp::IIR::Filter<float>;
     using CutFilter = juce::dsp::ProcessorChain<Filter,Filter,Filter,Filter>;
     using MonoChain = juce::dsp::ProcessorChain<CutFilter,Filter,CutFilter>;
@@ -87,6 +92,9 @@ private:
         HighCut
     };
     
+    using Coefficients = Filter::CoefficientsPtr;
+    
+    static void updateCoefficients(Coefficients old, const Coefficients& replacements);
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessor)
 };
