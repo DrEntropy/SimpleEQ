@@ -96,6 +96,18 @@ private:
     
     static void updateCoefficients(Coefficients old, const Coefficients& replacements);
     
+    
+    // helper
+    
+    template  <int Index, typename ChainType,typename CoefficientType>
+    void update(ChainType& chain,const CoefficientType& cutCoeffs){
+        
+        updateCoefficients(chain.template get<Index>().coefficients, cutCoeffs[Index]);
+        chain.template setBypassed<Index>(false);
+    }
+    
+    // setup cut filteres
+    
     template<typename ChainType,typename CoefficientType>
     void updateCutFilter(ChainType& cutFilter, const CoefficientType& cutCoeffs,
                          Slope cutSlope, const float sampleRate) {
@@ -110,34 +122,21 @@ private:
         switch(cutSlope)
         {
              
-            case Slope_12:
-                *cutFilter.template get<0>().coefficients = *cutCoeffs[0];
-                cutFilter.template setBypassed<0>(false);
-                break;
-            case Slope_24:
-                *cutFilter.template get<0>().coefficients = *cutCoeffs[0];
-                cutFilter.template setBypassed<0>(false);
-                *cutFilter.template get<1>().coefficients = *cutCoeffs[1];
-                cutFilter.template setBypassed<1>(false);
-                break;
-            case Slope_36:
-                *cutFilter.template get<0>().coefficients = *cutCoeffs[0];
-                cutFilter.template setBypassed<0>(false);
-                *cutFilter.template get<1>().coefficients = *cutCoeffs[1];
-                cutFilter.template setBypassed<1>(false);
-                *cutFilter.template get<2>().coefficients = *cutCoeffs[2];
-                cutFilter.template setBypassed<2>(false);
-                break;
+                
             case Slope_48:
-                *cutFilter.template get<0>().coefficients = *cutCoeffs[0];
-                cutFilter.template setBypassed<0>(false);
-                *cutFilter.template get<1>().coefficients = *cutCoeffs[1];
-                cutFilter.template setBypassed<1>(false);
-                *cutFilter.template get<2>().coefficients = *cutCoeffs[2];
-                cutFilter.template setBypassed<2>(false);
-                *cutFilter.template get<3>().coefficients = *cutCoeffs[3];
-                cutFilter.template setBypassed<3>(false);
-                break;
+                update<3>(cutFilter,cutCoeffs);
+            
+                
+            case Slope_36:
+                update<2>(cutFilter,cutCoeffs);
+                
+            case Slope_24:
+                update<1>(cutFilter,cutCoeffs);
+       
+            case Slope_12:
+                update<0>(cutFilter,cutCoeffs);
+ 
+ 
            }
         
         
