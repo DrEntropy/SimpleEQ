@@ -49,8 +49,12 @@ void SimpleEQAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     auto bounds = getLocalBounds();
+    
+    // reserve area for spectral display
     auto responseArea = bounds.removeFromTop(bounds.getHeight()*0.33);
     
+    
+    // Filter controls
     auto lowCutArea = bounds.removeFromLeft(bounds.getWidth()*0.33);
     auto highCutArea = bounds.removeFromRight(bounds.getWidth()*0.50);
     
@@ -64,6 +68,8 @@ void SimpleEQAudioProcessorEditor::resized()
     peakFreqSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.33));
     peakGainSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.50));
     peakQualitySlider.setBounds(bounds);
+    
+    
     
 }
 
