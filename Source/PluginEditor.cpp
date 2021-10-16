@@ -27,13 +27,15 @@ highCutSlopeSliderAttachment(audioProcessor.apvts,"HighCut Slope",highCutSlopeSl
         addAndMakeVisible(comp);
     }
     
-    this->startTimerHz(60);
+   
     
     const auto& params = audioProcessor.getParameters();
     for(auto param : params){
         param->addListener(this);
     }
     
+    
+    this->startTimerHz(60);
     
     
     setSize (600, 400);

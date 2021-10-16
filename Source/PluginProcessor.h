@@ -25,7 +25,7 @@ struct ChainSettings
 {
     float peakFreq {0},peakGainInDecibels{0}, peakQ {1.0f};
     float lowCutFreq {0},highCutFreq{0};
-    Slope lowCutSlope {Slope_12},highCutSlope{Slope_12};
+    Slope lowCutSlope {Slope::Slope_12},highCutSlope{Slope::Slope_12};
 };
 
 using Filter = juce::dsp::IIR::Filter<float>;
@@ -75,7 +75,7 @@ void update(ChainType& chain,const CoefficientType& cutCoeffs){
 
 template<typename ChainType,typename CoefficientType>
 void updateCutFilter(ChainType& cutFilter, const CoefficientType& cutCoeffs,
-                     Slope cutSlope, const float sampleRate) {
+                     const Slope& cutSlope, const float sampleRate) {
 
     
  
