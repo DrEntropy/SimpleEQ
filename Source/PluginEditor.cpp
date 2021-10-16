@@ -27,18 +27,25 @@ highCutSlopeSliderAttachment(audioProcessor.apvts,"HighCut Slope",highCutSlopeSl
         addAndMakeVisible(comp);
     }
     
+    this->startTimerHz(60);
+    
     const auto& params = audioProcessor.getParameters();
     for(auto param : params){
-        param-> addListener(this);
+        param->addListener(this);
     }
     
-    this->startTimer(10);
+    
     
     setSize (600, 400);
 }
 
+// this is not optional
 SimpleEQAudioProcessorEditor::~SimpleEQAudioProcessorEditor()
 {
+    const auto& params = audioProcessor.getParameters();
+    for(auto param : params){
+        param->removeListener(this);
+    }
 }
 
 //==============================================================================
