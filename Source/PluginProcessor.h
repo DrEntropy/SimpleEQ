@@ -46,10 +46,66 @@ void updateCoefficients(Coefficients old, const Coefficients& replacements);
 
 Coefficients makePeakFilter(const ChainSettings& chainSettings, const double samplerate);
 
+//note that these are defined here because they need to be defined before use with auto type.
+// they are inline otherwise it will be duplicat symbols.
+
+inline auto makeHighCutFilter(const ChainSettings& chainSettings, double sampleRate) {
+    return juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(
+                   chainSettings.highCutFreq, sampleRate, (chainSettings.highCutSlope+1)*2);
+}
+
+inline auto makeLowCutFilter(const ChainSettings& chainSettings, double sampleRate) {
+    return juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(
+                   chainSettings.lowCutFreq, sampleRate,(chainSettings.lowCutSlope+1)*2);
+}
+
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState&  );
 
+// helper
 
+template  <int Index, typename ChainType,typename CoefficientType>
+void update(ChainType& chain,const CoefficientType& cutCoeffs){
+    
+    updateCoefficients(chain.template get<Index>().coefficients, cutCoeffs[Index]);
+    chain.template setBypassed<Index>(false);
+}
+
+// setup cut filteres
+
+template<typename ChainType,typename CoefficientType>
+void updateCutFilter(ChainType& cutFilter, const CoefficientType& cutCoeffs,
+                     Slope cutSlope, const float sampleRate) {
+
+    
+ 
+    cutFilter.template setBypassed<0>(true);
+    cutFilter.template setBypassed<1>(true);
+    cutFilter.template setBypassed<2>(true);
+    cutFilter.template setBypassed<3>(true);
+    
+    switch(cutSlope)
+    {
+         
+            
+        case Slope_48:
+            update<3>(cutFilter,cutCoeffs);
+        
+            
+        case Slope_36:
+            update<2>(cutFilter,cutCoeffs);
+            
+        case Slope_24:
+            update<1>(cutFilter,cutCoeffs);
+   
+        case Slope_12:
+            update<0>(cutFilter,cutCoeffs);
+
+
+       }
+    
+    
+}
 
 class SimpleEQAudioProcessor  : public juce::AudioProcessor
 {
@@ -94,6 +150,11 @@ public:
     static juce::AudioProcessorValueTreeState::ParameterLayout  createParameterLayout() ;
     juce::AudioProcessorValueTreeState apvts {*this, nullptr,"Parameters", createParameterLayout()};
     
+    
+    
+    
+    
+    
 private:
     
     void  updateFilters(float sampleRate);
@@ -108,52 +169,6 @@ private:
    
     
 
-    
-    
-    // helper
-    
-    template  <int Index, typename ChainType,typename CoefficientType>
-    void update(ChainType& chain,const CoefficientType& cutCoeffs){
-        
-        updateCoefficients(chain.template get<Index>().coefficients, cutCoeffs[Index]);
-        chain.template setBypassed<Index>(false);
-    }
-    
-    // setup cut filteres
-    
-    template<typename ChainType,typename CoefficientType>
-    void updateCutFilter(ChainType& cutFilter, const CoefficientType& cutCoeffs,
-                         Slope cutSlope, const float sampleRate) {
-   
-        
-     
-        cutFilter.template setBypassed<0>(true);
-        cutFilter.template setBypassed<1>(true);
-        cutFilter.template setBypassed<2>(true);
-        cutFilter.template setBypassed<3>(true);
-        
-        switch(cutSlope)
-        {
-             
-                
-            case Slope_48:
-                update<3>(cutFilter,cutCoeffs);
-            
-                
-            case Slope_36:
-                update<2>(cutFilter,cutCoeffs);
-                
-            case Slope_24:
-                update<1>(cutFilter,cutCoeffs);
-       
-            case Slope_12:
-                update<0>(cutFilter,cutCoeffs);
- 
- 
-           }
-        
-        
-    }
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessor)
 };
