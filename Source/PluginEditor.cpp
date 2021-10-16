@@ -110,7 +110,7 @@ void SimpleEQAudioProcessorEditor::paint (juce::Graphics& g)
     const double outputMax = responseArea.getY();
     
     auto map = [outputMin,outputMax](double input){
-        return jmap(input,-24.0,24.0,outputMin,outputMax);
+        return jlimit(outputMax,outputMin,jmap(input,-24.0,24.0,outputMin,outputMax));
     };
     
     responseCurve.startNewSubPath(responseArea.getX(),map(mags.front()));
@@ -168,6 +168,7 @@ void SimpleEQAudioProcessorEditor::timerCallback(){
         auto sampleRate = audioProcessor.getSampleRate();
         auto peakCoef = makePeakFilter(chainSettings, sampleRate);
         updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients,peakCoef);
+        
         auto lowCutCoef = makeLowCutFilter(chainSettings, sampleRate);
         auto highCutCoef = makeHighCutFilter(chainSettings, sampleRate);
         updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoef, chainSettings.highCutSlope,sampleRate);
