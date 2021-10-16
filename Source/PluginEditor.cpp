@@ -26,6 +26,14 @@ highCutSlopeSliderAttachment(audioProcessor.apvts,"HighCut Slope",highCutSlopeSl
     {
         addAndMakeVisible(comp);
     }
+    
+    const auto& params = audioProcessor.getParameters();
+    for(auto param : params){
+        param-> addListener(this);
+    }
+    
+    this->startTimer(10);
+    
     setSize (600, 400);
 }
 
@@ -139,6 +147,17 @@ void SimpleEQAudioProcessorEditor::resized()
     
     
     
+}
+
+void SimpleEQAudioProcessorEditor::parameterValueChanged(int parameterIndex, float newValue) {
+    
+    parametersChanged.set(true);
+}
+
+void SimpleEQAudioProcessorEditor::timerCallback(){
+    if(parametersChanged.compareAndSetBool(false, true)) {
+        repaint();
+    }
 }
 
 std::vector<juce::Component*> SimpleEQAudioProcessorEditor::getComps()
