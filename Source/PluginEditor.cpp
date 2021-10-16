@@ -99,7 +99,7 @@ void SimpleEQAudioProcessorEditor::paint (juce::Graphics& g)
             mag *= lowcut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
         
         if(!lowcut.isBypassed<3>())
-            mag *=lowcut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            mag *= lowcut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
        
         mags[i] = Decibels::gainToDecibels(mag);
     }
@@ -134,7 +134,7 @@ void SimpleEQAudioProcessorEditor::resized()
     auto bounds = getLocalBounds();
     
     // reserve area for spectral display
-    auto responseArea = bounds.removeFromTop(bounds.getHeight()*0.33);
+    bounds.removeFromTop(bounds.getHeight()*0.33);
     
     
     // Filter controls
@@ -163,6 +163,17 @@ void SimpleEQAudioProcessorEditor::parameterValueChanged(int parameterIndex, flo
 
 void SimpleEQAudioProcessorEditor::timerCallback(){
     if(parametersChanged.compareAndSetBool(false, true)) {
+        //update GUI filter
+        auto chainSettings = getChainSettings(audioProcessor.apvts);
+        auto sampleRate = audioProcessor.getSampleRate();
+        auto peakCoef = makePeakFilter(chainSettings, sampleRate);
+        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients,peakCoef);
+        auto lowCutCoef = makeLowCutFilter(chainSettings, sampleRate);
+        auto highCutCoef = makeHighCutFilter(chainSettings, sampleRate);
+        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoef, chainSettings.highCutSlope,sampleRate);
+        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoef, chainSettings.lowCutSlope,sampleRate);
+
+        //redraw
         repaint();
     }
 }
