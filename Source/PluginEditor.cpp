@@ -94,7 +94,7 @@ void SimpleEQAudioProcessorEditor::paint (juce::Graphics& g)
         if(!lowcut.isBypassed<0>())
             mag *= lowcut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
         
-        if(lowcut.isBypassed<1>())
+        if(!lowcut.isBypassed<1>())
             mag *= lowcut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
         
         if(!lowcut.isBypassed<2>())
