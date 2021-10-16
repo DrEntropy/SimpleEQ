@@ -40,6 +40,12 @@ enum ChainPositions
 };
 
 
+using Coefficients = Filter::CoefficientsPtr;
+
+void updateCoefficients(Coefficients old, const Coefficients& replacements);
+
+Coefficients makePeakFilter(const ChainSettings& chainSettings, const double samplerate);
+
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState&  );
 
@@ -101,9 +107,7 @@ private:
     
    
     
-    using Coefficients = Filter::CoefficientsPtr;
-    
-    static void updateCoefficients(Coefficients old, const Coefficients& replacements);
+
     
     
     // helper

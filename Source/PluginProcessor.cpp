@@ -109,6 +109,21 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
 }
 
+Coefficients makePeakFilter(const ChainSettings& chainSettings, double sampleRate) {
+   return juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
+                                                        chainSettings.peakFreq, chainSettings.peakQ,
+                                                        juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels));
+    
+}
+
+void  SimpleEQAudioProcessor::updatePeakFilter(const ChainSettings& chainSettings,float sampleRate){
+    auto peakCoef = makePeakFilter(chainSettings, sampleRate);
+    
+    updateCoefficients(leftChain.get<ChainPositions::Peak>().coefficients, peakCoef);
+    updateCoefficients(rightChain.get<ChainPositions::Peak>().coefficients, peakCoef);
+  
+}
+
 void  SimpleEQAudioProcessor::updateHighCutFilters(const ChainSettings& chainSettings,float sampleRate)
 {
     auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
@@ -151,6 +166,14 @@ void SimpleEQAudioProcessor::updateFilters(float sampleRate)
  
      
 }
+
+void updateCoefficients(Coefficients old,const Coefficients& replacements)
+{
+     *old = *replacements;
+ }
+
+
+
 
 void SimpleEQAudioProcessor::releaseResources()
 {
@@ -303,20 +326,9 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState&  apvts) {
 }
 
 
-void  SimpleEQAudioProcessor::updatePeakFilter(const ChainSettings& chainSettings,float sampleRate){
-    auto peakCoef = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
-                                                        chainSettings.peakFreq, chainSettings.peakQ,
-                                                        juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels));
-    
-    updateCoefficients(leftChain.get<ChainPositions::Peak>().coefficients, peakCoef);
-    updateCoefficients(rightChain.get<ChainPositions::Peak>().coefficients, peakCoef);
-  
-}
 
-void SimpleEQAudioProcessor::updateCoefficients(Coefficients old,const Coefficients& replacements)
-{
-     *old = *replacements;
- }
+
+
 
 //==============================================================================
 // This creates new instances of the plugin..
