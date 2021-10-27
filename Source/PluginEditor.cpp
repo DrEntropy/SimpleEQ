@@ -22,25 +22,51 @@ void LookAndFeel::drawRotarySlider(juce::Graphics & g, int x,int y, int width, i
     g.setColour(Colour(255u,255u,255u));
     g.drawEllipse(bounds, 1.0f);
     
-    auto center = bounds.getCentre();
+    // cast the slider to a rotary slider with labels. If that doesnt work something is wrong, so just draw nuttin
+    if (auto* rswl = dynamic_cast<RotarySliderWithLabels*>(&slider)){
+        
+        auto center = bounds.getCentre();
+        Path p;
+        
+        Rectangle<float> r;
+        // the pointer
+        r.setLeft(center.getX()-2.0f);
+        r.setRight(center.getX()+2.0f);
+        r.setTop(bounds.getY());
+        r.setBottom(center.getY()-rswl->getTextHeight()*1.25);
+        p.addRoundedRectangle(r,2.0f);
+        
+        
+        jassert(rotaryStartAngle<rotaryEndAngle);
+        
+        auto sliderAngle = jmap(sliderPosProportional,0.0f,1.0f,rotaryStartAngle,rotaryEndAngle);
+        
+        p.applyTransform(AffineTransform().rotation(sliderAngle, center.getX(), center.getY()));
+        
+        g.fillPath(p); // draw the dial indicator
+        
+        // draw the current value
+        
+        g.setFont(rswl->getTextHeight());
+        auto text = rswl->getDisplayString();
+        auto strWidth = g.getCurrentFont().getStringWidth(text);
+        
+        r.setSize(strWidth+4,rswl->getTextHeight()+4);
+        r.setCentre(bounds.getCentre());
+        g.setColour(Colours::black);
+        g.fillRect(r);
+        g.setColour(Colours::white);
+        g.drawFittedText(text,r.toNearestInt(),juce::Justification::centred,1);
+        
+        
+        
+    }
     
-    Path p;
+   
     
-    Rectangle<float> r;
+ 
     
-    r.setLeft(center.getX()-2.0f);
-    r.setRight(center.getX()+2.0f);
-    r.setTop(bounds.getY());
-    r.setBottom(center.getY());
-    p.addRectangle(r);
-    
-    jassert(rotaryStartAngle<rotaryEndAngle);
-    
-    auto sliderAngle = jmap(sliderPosProportional,0.0f,1.0f,rotaryStartAngle,rotaryEndAngle);
-    
-    p.applyTransform(AffineTransform().rotation(sliderAngle, center.getX(), center.getY()));
-    
-    g.fillPath(p);
+   
     
 
     
@@ -73,6 +99,11 @@ juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
     r.setY(2);
     
     return r;
+}
+
+
+juce::String RotarySliderWithLabels::getDisplayString() const{
+    return juce::String(getValue());
 }
 //=====================================================================
 
