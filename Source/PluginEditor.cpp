@@ -9,6 +9,33 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
+void LookAndFeel::drawRotarySlider(juce::Graphics & g, int x,int y, int width, int height, float sliderPosProportional,
+                                   float rotaryStartAngle, float rotaryEndAngle, juce::Slider &slider){
+    
+    using namespace juce;
+    auto bounds = Rectangle<float> {static_cast<float>(x),static_cast<float>(y),
+                                  static_cast<float>(width),static_cast<float>(height)};
+    
+}
+
+void RotarySliderWithLabels::paint(juce::Graphics& g)
+{
+    using namespace juce;
+    auto startAng  = degreesToRadians(180.0f+45.0f);
+    auto endAng =degreesToRadians(180.0f-  45.0f) +MathConstants<float>::twoPi;
+    auto range = getRange();
+    auto sliderBounds = getSliderBounds();
+    
+    getLookAndFeel().drawRotarySlider(g, sliderBounds.getX(), sliderBounds.getY(), sliderBounds.getWidth(), sliderBounds.getHeight(), jmap(getValue(),range.getStart(),range.getEnd(), 0.0, 1.0), startAng, endAng, *this);
+}
+
+juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
+{
+    return getLocalBounds();
+}
+//=====================================================================
+
 ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor &p): audioProcessor(p)
 {
     const auto& params = audioProcessor.getParameters();
@@ -129,6 +156,8 @@ void ResponseCurveComponent::paint(juce::Graphics &g){
     g.strokePath(responseCurve, PathStrokeType(2.0f));
     
 }
+
+
 
 
 
