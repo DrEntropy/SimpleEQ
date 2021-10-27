@@ -16,6 +16,33 @@ void LookAndFeel::drawRotarySlider(juce::Graphics & g, int x,int y, int width, i
     using namespace juce;
     auto bounds = Rectangle<float> {static_cast<float>(x),static_cast<float>(y),
                                   static_cast<float>(width),static_cast<float>(height)};
+    g.setColour(Colour(20u,20u,195u));
+    g.fillEllipse(bounds);
+    
+    g.setColour(Colour(255u,255u,255u));
+    g.drawEllipse(bounds, 1.0f);
+    
+    auto center = bounds.getCentre();
+    
+    Path p;
+    
+    Rectangle<float> r;
+    
+    r.setLeft(center.getX()-2.0f);
+    r.setRight(center.getX()+2.0f);
+    r.setTop(bounds.getY());
+    r.setBottom(center.getY());
+    p.addRectangle(r);
+    
+    jassert(rotaryStartAngle<rotaryEndAngle);
+    
+    auto sliderAngle = jmap(sliderPosProportional,0.0f,1.0f,rotaryStartAngle,rotaryEndAngle);
+    
+    p.applyTransform(AffineTransform().rotation(sliderAngle, center.getX(), center.getY()));
+    
+    g.fillPath(p);
+    
+
     
 }
 
