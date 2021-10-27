@@ -38,6 +38,13 @@ public:
     ~RotarySliderWithLabels() {
         setLookAndFeel(nullptr);
     }
+    
+    struct LabelPos {
+        float pos;
+        juce::String label;
+    };
+    
+    juce::Array<LabelPos> labels;
     // custom visuals
     void paint(juce::Graphics& g) override;
     juce::Rectangle<int> getSliderBounds() const;
