@@ -172,8 +172,9 @@ ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor &p): audio
         param->addListener(this);
     }
     
-    
+    updateChain();
     startTimerHz(60);
+  
     
 }
 
@@ -195,19 +196,26 @@ void ResponseCurveComponent::parameterValueChanged(int parameterIndex, float new
 void ResponseCurveComponent::timerCallback(){
     if(parametersChanged.compareAndSetBool(false, true)) {
         //update GUI filter
-        auto chainSettings = getChainSettings(audioProcessor.apvts);
-        auto sampleRate = audioProcessor.getSampleRate();
-        auto peakCoef = makePeakFilter(chainSettings, sampleRate);
-        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients,peakCoef);
-        
-        auto lowCutCoef = makeLowCutFilter(chainSettings, sampleRate);
-        auto highCutCoef = makeHighCutFilter(chainSettings, sampleRate);
-        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoef, chainSettings.highCutSlope,sampleRate);
-        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoef, chainSettings.lowCutSlope,sampleRate);
-
+        updateChain();
         //redraw
         repaint();
     }
+}
+
+void ResponseCurveComponent::updateChain(){
+    //update GUI filter chain
+    auto chainSettings = getChainSettings(audioProcessor.apvts);
+    auto sampleRate = audioProcessor.getSampleRate();
+    auto peakCoef = makePeakFilter(chainSettings, sampleRate);
+    updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients,peakCoef);
+    
+    auto lowCutCoef = makeLowCutFilter(chainSettings, sampleRate);
+    auto highCutCoef = makeHighCutFilter(chainSettings, sampleRate);
+    updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoef, chainSettings.highCutSlope,sampleRate);
+    updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoef, chainSettings.lowCutSlope,sampleRate);
+
+   
+    
 }
 
 void ResponseCurveComponent::paint(juce::Graphics &g){
@@ -319,19 +327,27 @@ highCutSlopeSliderAttachment(audioProcessor.apvts,"HighCut Slope",highCutSlopeSl
     // Tedius labels here... could use a helper function or two i think
     peakFreqSlider.labels.add({0.f,"20 Hz"});
     peakFreqSlider.labels.add({1.f,"20 kHz"});
+    
     peakQualitySlider.labels.add({0.f,"0.1"});
     peakQualitySlider.labels.add({1.f,"10.0"});
+    
     peakGainSlider.labels.add({0.f,"-24dB"});
     peakGainSlider.labels.add({1.f,"+24dB"});
         
     lowCutFreqSlider.labels.add({0.f,"20 Hz"});
     lowCutFreqSlider.labels.add({1.f,"20 kHz"});
+    
     highCutFreqSlider.labels.add({0.f,"20 Hz"});
     highCutFreqSlider.labels.add({1.f,"20 kHz"});
+    
     lowCutSlopeSlider.labels.add({0.f,"12"});
     lowCutSlopeSlider.labels.add({1.f,"48"});
+    
     highCutSlopeSlider.labels.add({0.f,"12"});
     highCutSlopeSlider.labels.add({1.f,"48"});
+    
+    
+    
     for (auto* comp: getComps())
     {
         addAndMakeVisible(comp);
@@ -342,7 +358,7 @@ highCutSlopeSliderAttachment(audioProcessor.apvts,"HighCut Slope",highCutSlopeSl
 
     
     
-    setSize (600, 400);
+    setSize (600, 480);
 }
 
 // this is not optional
@@ -367,10 +383,16 @@ void SimpleEQAudioProcessorEditor::resized()
     // subcomponents in your editor..
     auto bounds = getLocalBounds();
     
+    // ratio of the top to the remainder. THe live constant is for experimetning
+    // float hRatio = JUCE_LIVE_CONSTANT(33)/100.f;
+    
+    float hRatio = 0.25f;
+    
     // reserve area for spectral display
-   auto responseArea = bounds.removeFromTop(bounds.getHeight()*0.33);
+   auto responseArea = bounds.removeFromTop(bounds.getHeight() * hRatio);
     responseCurveComponent.setBounds(responseArea);
     
+    bounds.removeFromTop(5); // make some space between the spectral part and the knobs.
     // Filter controls
     auto lowCutArea = bounds.removeFromLeft(bounds.getWidth()*0.33);
     auto highCutArea = bounds.removeFromRight(bounds.getWidth()*0.50);

@@ -75,6 +75,8 @@ private:
     juce::Atomic<bool> parametersChanged {false};
     SimpleEQAudioProcessor&  audioProcessor;
     MonoChain monoChain;
+    
+    void updateChain();  // helper , called to update monoChain to match parameters
 };
 
 //==============================================================================
