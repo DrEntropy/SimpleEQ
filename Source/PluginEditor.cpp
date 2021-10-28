@@ -411,10 +411,22 @@ void ResponseCurveComponent::resized(){
         r.setCentre(0,y);
         r.setX(getWidth()-textWidth);
         
-        // draw line
+        // drawtxt
         g.setColour( gdB == 0.0 ? Colour(0u,172u,1u) : Colours::lightgrey);
-        g.drawFittedText(str,r,juce::Justification::right,1);
+        g.drawFittedText(str,r,juce::Justification::centred,1);
         
+        // We also need to put in scale for spectrum analizer
+        
+        str.clear();
+        str << (gdB-24.f);
+        // move rectangle to left edge
+        r.setX(1);
+        textWidth = g.getCurrentFont().getStringWidth(str);
+        //new size
+        r.setSize(textWidth,fontHeight);
+        
+        g.setColour(Colours::lightgrey);
+        g.drawFittedText(str,r,juce::Justification::centred,1);
     }
     
     
