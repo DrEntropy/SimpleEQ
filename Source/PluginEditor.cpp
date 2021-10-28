@@ -399,7 +399,7 @@ void ResponseCurveComponent::resized(){
         String str;
         if (gdB > 0 )
             str << "+";
-        str << gdB << "dB";
+        str << gdB; // << "dB";
         
         // a hack
         auto textWidth = g.getCurrentFont().getStringWidth(str);
@@ -428,8 +428,8 @@ juce::Rectangle<int> ResponseCurveComponent::getRenderArea(){
 //
 //    renderArea.reduce(deltax,deltay);
     renderArea.removeFromTop(12);
-    renderArea.removeFromLeft(10);
-    renderArea.removeFromRight(30);
+    renderArea.removeFromLeft(20);
+    renderArea.removeFromRight(20);
     renderArea.removeFromBottom(1);
     
     return renderArea;
