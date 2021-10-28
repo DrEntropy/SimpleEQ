@@ -310,9 +310,12 @@ void ResponseCurveComponent::resized(){
     background = Image(Image::PixelFormat::RGB,getWidth(),getHeight(),true);
     
     Graphics g{background};
+    // Commented out frequencies were colliding.
     Array<float> freqs{
-        20,30,40,50,100,200,300,400,500,1000,
-        2000,3000,4000,5000,10000,
+        20,/* 30,40,*/ 50,100,200,
+        /* 300,400, */
+        500,1000,
+        2000,/* 3000,4000, */ 5000,10000,
         20000
     };
     
@@ -355,6 +358,39 @@ void ResponseCurveComponent::resized(){
         g.drawHorizontalLine(y,left, right);
     }
     
+    // Labels
+    g.setColour(Colours::lightgrey);
+    int fontHeight{10};
+    g.setFont(fontHeight);
+    
+    for(int i=0; i< freqs.size();++i)
+    {
+        auto f =freqs[i];
+        auto x = xs[i];
+        
+        bool addK = false;
+        String str;
+        if (f >= 1000.0f) {
+            addK= true;
+            f /= 1000.f;
+        }
+        
+        str << f;
+        if(addK)
+            str << "k";
+        str << "Hz";
+        
+        auto textWidth = g.getCurrentFont().getStringWidth(str);
+        
+        // bound the text
+        Rectangle<int> r;
+        r.setSize(textWidth,fontHeight);
+        r.setCentre(x,0);
+        r.setY(1);
+        
+        g.drawFittedText(str,r,juce::Justification::centred,1);
+        
+    }
     
 }
 
