@@ -70,11 +70,13 @@ juce::Timer {
     void timerCallback() override;
     
     void paint(juce::Graphics& g) override;
+    void resized() override;
     
 private:
     juce::Atomic<bool> parametersChanged {false};
     SimpleEQAudioProcessor&  audioProcessor;
     MonoChain monoChain;
+    juce::Image background;
     
     void updateChain();  // helper , called to update monoChain to match parameters
 };
@@ -124,6 +126,8 @@ private:
     
     std::vector<juce::Component*> getComps();
     
+    
+   
  
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessorEditor)
