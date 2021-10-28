@@ -79,6 +79,9 @@ private:
     juce::Image background;
     
     void updateChain();  // helper , called to update monoChain to match parameters
+    
+    juce::Rectangle<int> getRenderArea();
+    juce::Rectangle<int> getAnalysisArea();
 };
 
 //==============================================================================
