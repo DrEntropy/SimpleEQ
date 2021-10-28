@@ -223,7 +223,7 @@ void ResponseCurveComponent::paint(juce::Graphics &g){
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (Colours::black);
     auto responseArea = getAnalysisArea();
-    //auto responseArea = bounds.removeFromTop(bounds.getHeight()*0.33);
+    
     
     auto w = responseArea.getWidth();
     
@@ -298,9 +298,7 @@ void ResponseCurveComponent::paint(juce::Graphics &g){
     g.setColour(Colours::white);
     g.strokePath(responseCurve, PathStrokeType(2.0f));
     
-    // for testing only.
-  //  g.setColour(Colours::red);
-  //  g.drawRect(responseArea);
+
     
 }
 
@@ -327,7 +325,7 @@ void ResponseCurveComponent::resized(){
     auto top = renderArea.getY();
     auto bottom = renderArea.getBottom();
     auto width = renderArea.getWidth();
-  //  auto height = renderArea.getHeight();
+
     
     // cache the x's
     Array<float> xs;
@@ -349,7 +347,7 @@ void ResponseCurveComponent::resized(){
     Array<float> gain{
         -24,-12,0,12,24
     };
-   // g.setColour(Colours::white);
+
     for (auto gdB : gain)
     {
         auto y = jmap(gdB,-24.f,24.f,static_cast<float>(bottom),static_cast<float>(top));
@@ -435,10 +433,7 @@ void ResponseCurveComponent::resized(){
 juce::Rectangle<int> ResponseCurveComponent::getRenderArea(){
     
     auto renderArea = getLocalBounds();
-//    int deltax = 10; // JUCE_LIVE_CONSTANT(5);
-//    int deltay = 8; // JUCE_LIVE_CONSTANT(5);
-//
-//    renderArea.reduce(deltax,deltay);
+
     renderArea.removeFromTop(12);
     renderArea.removeFromLeft(20);
     renderArea.removeFromRight(20);
