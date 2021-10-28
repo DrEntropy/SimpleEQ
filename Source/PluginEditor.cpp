@@ -387,10 +387,36 @@ void ResponseCurveComponent::resized(){
         r.setSize(textWidth,fontHeight);
         r.setCentre(x,0);
         r.setY(1);
-        
+       
         g.drawFittedText(str,r,juce::Justification::centred,1);
         
     }
+    // gain labels
+    for (auto gdB : gain)
+    {
+        auto y = jmap(gdB,-24.f,24.f,static_cast<float>(bottom),static_cast<float>(top));
+        
+        String str;
+        if (gdB > 0 )
+            str << "+";
+        str << gdB << "dB";
+        
+        // a hack
+        auto textWidth = g.getCurrentFont().getStringWidth(str);
+        
+        
+        // bound the text
+        Rectangle<int> r;
+        r.setSize(textWidth,fontHeight);
+        r.setCentre(0,y);
+        r.setX(getWidth()-textWidth);
+        
+        // draw line
+        g.setColour( gdB == 0.0 ? Colour(0u,172u,1u) : Colours::lightgrey);
+        g.drawFittedText(str,r,juce::Justification::right,1);
+        
+    }
+    
     
 }
 
@@ -402,8 +428,8 @@ juce::Rectangle<int> ResponseCurveComponent::getRenderArea(){
 //
 //    renderArea.reduce(deltax,deltay);
     renderArea.removeFromTop(12);
-    renderArea.removeFromLeft(20);
-    renderArea.removeFromRight(20);
+    renderArea.removeFromLeft(10);
+    renderArea.removeFromRight(30);
     renderArea.removeFromBottom(1);
     
     return renderArea;
