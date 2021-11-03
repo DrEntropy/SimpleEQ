@@ -116,6 +116,9 @@ private:
     
     ResponseCurveComponent responseCurveComponent;
     
+    
+    juce::ToggleButton lowcutBypassButton,highcutBypassButton,peakBypassButton;
+    
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
     
