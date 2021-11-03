@@ -16,10 +16,15 @@ void LookAndFeel::drawRotarySlider(juce::Graphics & g, int x,int y, int width, i
     using namespace juce;
     auto bounds = Rectangle<float> {static_cast<float>(x),static_cast<float>(y),
                                   static_cast<float>(width),static_cast<float>(height)};
-    g.setColour(Colour(20u,20u,195u));
+    
+    auto enabled = slider.isEnabled();
+    
+    
+    
+    g.setColour( enabled ? Colour(20u,20u,195u) : Colours::darkgrey);
     g.fillEllipse(bounds);
     
-    g.setColour(Colour(255u,255u,255u));
+    g.setColour(enabled ? Colour(255u,255u,255u) : Colours::lightgrey);
     g.drawEllipse(bounds, 1.0f);
     
     // cast the slider to a rotary slider with labels. If that doesnt work something is wrong, so just draw nuttin
@@ -45,18 +50,21 @@ void LookAndFeel::drawRotarySlider(juce::Graphics & g, int x,int y, int width, i
         
         g.fillPath(p); // draw the dial indicator
         
-        // draw the current value
+        // draw the current value if enabled
         
-        g.setFont(rswl->getTextHeight());
-        auto text = rswl->getDisplayString();
-        auto strWidth = g.getCurrentFont().getStringWidth(text);
+        if(enabled) {
         
-        r.setSize(strWidth+4,rswl->getTextHeight()+4);
-        r.setCentre(bounds.getCentre());
-        g.setColour(Colours::black);
-        g.fillRect(r);
-        g.setColour(Colours::white);
-        g.drawFittedText(text,r.toNearestInt(),juce::Justification::centred,1);
+            g.setFont(rswl->getTextHeight());
+            auto text = rswl->getDisplayString();
+            auto strWidth = g.getCurrentFont().getStringWidth(text);
+
+            r.setSize(strWidth+4,rswl->getTextHeight()+4);
+            r.setCentre(bounds.getCentre());
+            g.setColour(Colours::black);
+            g.fillRect(r);
+            g.setColour(Colours::white);
+            g.drawFittedText(text,r.toNearestInt(),juce::Justification::centred,1);
+        }
         
     }
     
@@ -553,7 +561,41 @@ peakBypassButtonAttachment(audioProcessor.apvts, "Peak Bypassed", peakBypassButt
     highcutBypassButton.setLookAndFeel(&lnf);
     lowcutBypassButton.setLookAndFeel(&lnf);
 
+    // set up disabling knobs when the band is bypassed
     
+    // safePTR is to make sure nothing bad happens if we get closed. (It automatically becomes
+    // null if the component is deleted)
+    
+    auto safePtr = juce::Component::SafePointer<SimpleEQAudioProcessorEditor>(this);
+    
+    peakBypassButton.onClick = [safePtr]()
+    {
+        if(auto *comp = safePtr.getComponent()) {
+            auto bypassed = comp->peakBypassButton.getToggleState();
+            comp->peakFreqSlider.setEnabled(!bypassed);
+            comp->peakGainSlider.setEnabled(!bypassed);
+            comp->peakQualitySlider.setEnabled(!bypassed);
+            
+        }
+    };
+    
+    highcutBypassButton.onClick = [safePtr]()
+    {
+        if(auto *comp = safePtr.getComponent()) {
+            auto bypassed = comp->highcutBypassButton.getToggleState();
+            comp->highCutFreqSlider.setEnabled(!bypassed);
+            comp->highCutSlopeSlider.setEnabled(!bypassed);
+        }
+    };
+    
+    lowcutBypassButton.onClick = [safePtr]()
+    {
+        if(auto *comp = safePtr.getComponent()) {
+            auto bypassed = comp->lowcutBypassButton.getToggleState();
+            comp->lowCutFreqSlider.setEnabled(!bypassed);
+            comp->lowCutSlopeSlider.setEnabled(!bypassed);
+        }
+    };
     
     setSize (600, 480);
 }
