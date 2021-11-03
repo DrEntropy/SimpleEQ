@@ -58,18 +58,46 @@ void LookAndFeel::drawRotarySlider(juce::Graphics & g, int x,int y, int width, i
         g.setColour(Colours::white);
         g.drawFittedText(text,r.toNearestInt(),juce::Justification::centred,1);
         
-        
-        
     }
     
-   
     
- 
-    
-   
-    
+}
 
+
+
+void LookAndFeel::drawToggleButton (juce::Graphics& g, juce::ToggleButton& tb,
+                                    bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) {
     
+    // draw custom toggle button.
+    using namespace juce;
+    // start a path
+    Path powerButton;
+    auto bounds = tb.getLocalBounds();
+    // we want the size to fit to the smallest dimension.
+    auto size = jmin(bounds.getWidth(),bounds.getHeight()) - 6;  // a bit shrinking
+    
+    // making square at center.
+    auto r = bounds.withSizeKeepingCentre(size,size).toFloat();
+    
+    float ang = 30.f; //degrees
+    size -= 6;
+    
+    powerButton.addCentredArc(r.getCentreX(), r.getCentreY(),size*0.5, size*0.5, 0.f,degreesToRadians(ang),degreesToRadians(360.f-ang),true);
+    
+    // line from center to top of box r
+    powerButton.startNewSubPath(r.getCentreX(), r.getY());
+    powerButton.lineTo(r.getCentre());
+    
+    PathStrokeType pst(2,PathStrokeType::curved);
+    
+    auto color = tb.getToggleState() ? Colours::dimgrey : Colours::green;
+    g.setColour(color);
+    g.strokePath(powerButton, pst);
+    
+    // outer ellipse
+     g.drawEllipse(r, 2);
+    
+  
 }
 
 void RotarySliderWithLabels::paint(juce::Graphics& g)
@@ -520,7 +548,10 @@ peakBypassButtonAttachment(audioProcessor.apvts, "Peak Bypassed", peakBypassButt
     }
     
    
-    
+    // set lnf for the buttons to our custom lnf
+    peakBypassButton.setLookAndFeel(&lnf);
+    highcutBypassButton.setLookAndFeel(&lnf);
+    lowcutBypassButton.setLookAndFeel(&lnf);
 
     
     
@@ -530,7 +561,11 @@ peakBypassButtonAttachment(audioProcessor.apvts, "Peak Bypassed", peakBypassButt
 // this is not optional
 SimpleEQAudioProcessorEditor::~SimpleEQAudioProcessorEditor()
 {
-   
+    
+    // clear out look and feels when destroying editor.
+    peakBypassButton.setLookAndFeel(nullptr);
+    highcutBypassButton.setLookAndFeel(nullptr);
+    lowcutBypassButton.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
