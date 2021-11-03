@@ -315,7 +315,7 @@ SimpleEQAudioProcessor::createParameterLayout() {
     
     layout.add(std::make_unique<juce::AudioParameterBool>("LowCut Bypassed","LowCut Bypassed",false) );
     layout.add(std::make_unique<juce::AudioParameterBool>("Peak Bypassed","Peak Bypassed",false) );
-    layout.add(std::make_unique<juce::AudioParameterBool>("HigCut Bypassed","HighCut Bypassed",false) );
+    layout.add(std::make_unique<juce::AudioParameterBool>("HighCut Bypassed","HighCut Bypassed",false) );
     
     return layout;
     
