@@ -471,7 +471,10 @@ peakQualitySliderAttachment(audioProcessor.apvts,"Peak Q",peakQualitySlider),
 lowCutFreqSliderAttachment(audioProcessor.apvts,"LowCut Freq",lowCutFreqSlider),
 highCutFreqSliderAttachment(audioProcessor.apvts,"HighCut Freq",highCutFreqSlider),
 lowCutSlopeSliderAttachment(audioProcessor.apvts,"LowCut Slope",lowCutSlopeSlider),
-highCutSlopeSliderAttachment(audioProcessor.apvts,"HighCut Slope",highCutSlopeSlider)
+highCutSlopeSliderAttachment(audioProcessor.apvts,"HighCut Slope",highCutSlopeSlider),
+lowcutBypassButtonAttachment(audioProcessor.apvts, "LowCut Bypassed", lowcutBypassButton),
+highcutBypassButtonAttachment(audioProcessor.apvts, "HighCut Bypassed", highcutBypassButton),
+peakBypassButtonAttachment(audioProcessor.apvts, "Peak Bypassed", peakBypassButton)
 
 {
     // Make sure that before the constructor has finished, you've set the
